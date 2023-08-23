@@ -1,8 +1,9 @@
 package com.gestion.productos.com.gestion.productos.controller;
 
 import com.gestion.productos.com.gestion.productos.persistence.entity.Producto;
-import com.gestion.productos.com.gestion.productos.service.ServicioProducto;
+import com.gestion.productos.com.gestion.productos.service.ProductoServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,12 +14,14 @@ import java.util.List;
 public class Controller {
 
     @Autowired
-    private ServicioProducto servicioProducto;
+    private ProductoServicio productoServicio;
 
     @RequestMapping("/")
-    public String verPaginaPrincipal(Model modelo) {
-        List<Producto> listaProductos = servicioProducto.listAll();
+    public String verPaginaPrincipal(Model modelo, @Param("palabraClave") String palabraClave) {
+        List<Producto> listaProductos = productoServicio.listAll(palabraClave);
         modelo.addAttribute("listaProductos", listaProductos);
+        modelo.addAttribute("palabraClave", palabraClave);
+
         return "index";
     }
 
@@ -31,21 +34,21 @@ public class Controller {
 
     @RequestMapping(value = "/guardar" , method = RequestMethod.POST)
     public String guardarProducto(@ModelAttribute("producto") Producto producto) {
-        servicioProducto.save(producto);
+        productoServicio.save(producto);
         return "redirect:/";
     }
 
     @RequestMapping("/editar/{id}")
     public ModelAndView mostrarFormularioDeEditarProducto(@PathVariable(name = "id") Long id) {
        ModelAndView modelo = new ModelAndView("editar_producto");
-        Producto producto = servicioProducto.getProductoById(id);
+        Producto producto = productoServicio.getProductoById(id);
         modelo.addObject("producto", producto);
         return modelo;
     }
 
     @RequestMapping("/eliminar/{id}")
     public String eliminarProducto(@PathVariable(name = "id") Long id) {
-        servicioProducto.deleteById(id);
+        productoServicio.deleteById(id);
         return "redirect:/";
     }
 }

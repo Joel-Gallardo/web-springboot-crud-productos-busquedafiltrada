@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ServicioProducto {
+public class ProductoServicio {
 
     @Autowired
     private ProductoRepositorio productoRepositorio;
 
-    public List<Producto> listAll() {
+    public List<Producto> listAll(String palabraClave) {
+        if(palabraClave != null){
+            return productoRepositorio.findAll(palabraClave);
+        }
         return productoRepositorio.findAll();
     }
 
